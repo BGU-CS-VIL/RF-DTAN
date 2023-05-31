@@ -13,19 +13,19 @@ Official PyTorch implementation for our upcoming ICML 2023 paper, Regularization
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/your-username/repository.git
+   git clone https://github.com/BGU-CS-VIL/RF-DTAN.git
    ```
 
 2. Create a new conda environment:
 
    ```shell
-   conda create --name efdtan python=3.9
+   conda create --name rfdtan python=3.9
    ```
 
 3. Activate the conda environment:
 
    ```shell
-   conda activate efdtan
+   conda activate rfdtan
    ```
 
 4. Install the required dependencies:
