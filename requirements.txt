@@ -1,7 +1,5 @@
 difw==0.0.29
-matplotlib==3.5.0
 matplotlib==3.5.1
-numpy==1.19.2
 numpy==1.20.3
 scikit_learn==1.0.2
 torch==1.10.1
