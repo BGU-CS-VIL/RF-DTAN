@@ -7,7 +7,6 @@ Official PyTorch implementation for our upcoming ICML 2023 paper, Regularization
 ## Time Series Joint Alignment 
 <img src="images/alignment_results.png" alt="Variable length time series joint alignment results" width="600">
 
-Sure! Here's a short set of instructions for a Git README:
 
 ```markdown
 # Repository Name
@@ -52,4 +51,3 @@ Replace `ECGFiveDays` with the desired dataset name and add any additional argum
 
 ```
 
-Feel free to customize the instructions based on your specific project and requirements.
