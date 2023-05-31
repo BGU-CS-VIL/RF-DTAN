@@ -118,7 +118,6 @@ def get_argparser():
     parser.add_argument("--batch_size", type=int, default=64, help="batch size")
     parser.add_argument("--lr", type=float, default=0.0005, help="learning rate")
 
-    parser.add_argument("--lr_step", type=float, default=0.5, help="drop lr by K")
 
     parser.add_argument("--exp_name", type=str, default="default_name")
 

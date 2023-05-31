@@ -73,6 +73,7 @@ def run_UCR_alignment(args):
 if __name__ == "__main__":
     BACKBONES = ['InceptionTime']
     DATASETS = ["ECGFiveDays"]
+    override_config = False
     # ALL datasets: 
     # DATASETS = get_UCR_univariate_list()
     for backbone in BACKBONES:
@@ -80,23 +81,24 @@ if __name__ == "__main__":
             parser = get_argparser()
             args = parser.parse_args()
             # Overwrite args from the config.py file
-            args.backbone = backbone
 
-            args.ICAE_loss = True
-            args.ICAE_triplets_loss = False
-            args.WCSS_loss = False
-            args.WCSS_triplets_loss = False
-            args.smoothness_prior = False
+            if override_config:
+                args.backbone = backbone
+                args.dataset = dataset
+                args.ICAE_loss = True
+                args.ICAE_triplets_loss = False
+                args.WCSS_loss = False
+                args.WCSS_triplets_loss = False
+                args.smoothness_prior = False
 
-            args.n_recurrences = 4
-            args.batch_size = 64
-            args.n_epochs = 500
-            args.tess_size = 16
-            args.lr = 0.0005
-            args.no_validation = True
+                args.n_recurrences = 4
+                args.batch_size = 64
+                args.n_epochs = 500
+                args.tess_size = 16
+                args.lr = 0.0005
+                args.no_validation = True
 
 
-            args.dataset = dataset
 
             run_UCR_alignment(args)
 
