@@ -16,7 +16,7 @@ def get_argparser():
     parser.add_argument("--no_validation", default=False, action="store_true")
 
     # The dataset
-    parser.add_argument("--dataset", type=str, default="ECG200")
+    parser.add_argument("--dataset", type=str, default="ECGFiveDays")
     parser.add_argument(
         "--data_dir",
         type=str,
