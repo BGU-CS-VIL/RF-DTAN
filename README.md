@@ -44,4 +44,15 @@ python train_model.py --dataset ECGFiveDays --ICAE_loss
 
 Replace `ECGFiveDays` with the desired dataset name and add any additional arguments as needed.
 
+### Requirements
+```shell
+difw==0.0.29
+matplotlib==3.5.1
+numpy==1.20.3
+scikit_learn==1.0.2
+torch==1.10.1
+tqdm==4.62.3
+tsai==0.2.24
+tslearn==0.5.2
+```
 
