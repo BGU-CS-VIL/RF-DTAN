@@ -8,11 +8,6 @@ Official PyTorch implementation for our upcoming ICML 2023 paper, Regularization
 <img src="images/alignment_results.png" alt="Variable length time series joint alignment results" width="600">
 
 
-```markdown
-# Repository Name
-
-This repository contains code for the EFD-TAN (Example Feature-based Diffeomorphic Temporal Alignment Nets) project.
-
 ## Installation
 
 1. Clone the repository:
@@ -49,5 +44,4 @@ python train_model.py --dataset ECGFiveDays --ICAE_loss
 
 Replace `ECGFiveDays` with the desired dataset name and add any additional arguments as needed.
 
-```
 
