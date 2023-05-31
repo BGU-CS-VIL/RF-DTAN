@@ -44,6 +44,17 @@ python train_model.py --dataset ECGFiveDays --ICAE_loss
 
 Replace `ECGFiveDays` with the desired dataset name and add any additional arguments as needed.
 
+We support the following losses: 
+- ICAE_loss
+- ICAE_triplet_loss
+- WCSS_loss
+- WCSS_triplet_loss
+- smoothness_prior
+
+ICAE - Inverse Consistecny Averaging Error 
+
+WCSS - Within-Class Sum of Squares
+
 ### Requirements
 ```shell
 difw==0.0.29
