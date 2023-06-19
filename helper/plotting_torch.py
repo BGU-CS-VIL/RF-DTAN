@@ -1,7 +1,9 @@
 import numpy as np
 import torch
 from helper.UCR_loader import processed_UCR_data
-from tsai.data.external import get_UCR_data as get_UCR_data_tsai
+#from tsai.data.external import get_UCR_data as get_UCR_data_tsai
+from tslearn.datasets import UCR_UEA_datasets
+
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -126,13 +128,12 @@ def plot_signals(model, device, dataset_name, data_dir, N=10, seed=0, savefig=Fa
     torch.manual_seed(seed)
     np.random.seed(seed)
     with torch.no_grad():
-        # Torch channels first
-        X_train, y_train, X_test, y_test = get_UCR_data_tsai(
-            dataset_name, parent_dir=data_dir
-        )
+        UCR_data = UCR_UEA_datasets()
+        # tslearn format (N, sz, C). Torch needs (N, C, sz)
+        X_train, y_train, X_test, y_test = UCR_data.load_dataset(dataset_name)
 
         X_train, y_train, X_test, y_test = processed_UCR_data(
-            X_train, y_train, X_test, y_test, replace_nans=False
+            X_train, y_train, X_test, y_test, replace_nans=False, swap_channel_dim=True
         )
         set_names = ["train", "test"]
         sets_dict = {
@@ -151,7 +152,7 @@ def plot_signals(model, device, dataset_name, data_dir, N=10, seed=0, savefig=Fa
                     Xk = X[class_idx_bool]
                     sample_idx = np.random.choice(len(Xk), N)  # N samples
 
-                    Xk = torch.tensor(Xk[sample_idx]).to(device)
+                    Xk = torch.Tensor(Xk[sample_idx]).to(device)
                     outputs = model(Xk, return_nans=True)
 
                     Xk = Xk.cpu().numpy()

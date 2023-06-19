@@ -1,8 +1,6 @@
+# Install torch with appropriate CUDA version
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=10.2 -c pytorch
 difw==0.0.29
-matplotlib==3.5.1
-numpy==1.20.3
-scikit_learn==1.0.2
-torch==1.10.1
-tqdm==4.62.3
 tsai==0.2.24
+ipykernel
 tslearn==0.5.2

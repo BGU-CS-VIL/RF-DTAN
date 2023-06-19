@@ -26,6 +26,7 @@ class Trainer:
         model: nn.Module,
         train_loader: DataLoader,
         val_loader: DataLoader,
+        device: str,
         args,
     ) -> None:
         # args
@@ -33,7 +34,7 @@ class Trainer:
         self.exp_name = exp_name
         self.batch_size = args.batch_size
         self.n_epochs = args.n_epochs
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device
 
         self.train_loader = train_loader
         self.val_loader = val_loader

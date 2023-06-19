@@ -30,12 +30,14 @@ def run_UCR_alignment(args):
         batch_size=args.batch_size,
         val_split=val_split,
         data_dir=args.data_dir,
+        swap_channel_dim=True,
     )
 
 
     classes = torch.unique(train_loader.dataset[:][1])
     n_classes = len(classes)
     channels, input_shape = train_loader.dataset[0][0].shape
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Model
     model = RFDTAN(
@@ -44,7 +46,7 @@ def run_UCR_alignment(args):
         tess=args.tess_size,
         n_recurrence=args.n_recurrences,
         zero_boundary=args.zero_boundary,
-        device="cuda",
+        device=device,
         backbone=args.backbone,
     )
 
@@ -55,6 +57,7 @@ def run_UCR_alignment(args):
         model = model,
         train_loader = train_loader,
         val_loader = val_loader,
+        device=device,
         args = args)
 
     trainer_ucr.train(print_model=True)
@@ -64,7 +67,7 @@ def run_UCR_alignment(args):
 
     # Plot alignment
     plot_signals(
-        model, device="cuda", dataset_name=args.dataset, data_dir=args.data_dir
+        model, device=device, dataset_name=args.dataset, data_dir=args.data_dir
         )
 
 
@@ -72,8 +75,8 @@ def run_UCR_alignment(args):
 
 if __name__ == "__main__":
     BACKBONES = ['InceptionTime']
-    DATASETS = ["ECGFiveDays"]
-    override_config = False
+    DATASETS = ['ECGFiveDays']
+    override_config = True
     # ALL datasets: 
     # DATASETS = get_UCR_univariate_list()
     for backbone in BACKBONES:
@@ -92,7 +95,7 @@ if __name__ == "__main__":
                 args.smoothness_prior = False
 
                 args.n_recurrences = 4
-                args.batch_size = 64
+                args.batch_size = 128
                 args.n_epochs = 500
                 args.tess_size = 16
                 args.lr = 0.0005

@@ -6,7 +6,8 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
 from tslearn.preprocessing import TimeSeriesScalerMeanVariance, TimeSeriesResampler
 from sklearn.model_selection import train_test_split
-from tsai.data.external import get_UCR_data as get_UCR_data_tsai
+#from tsai.data.external import get_UCR_data as get_UCR_data_tsai
+from tslearn.datasets import UCR_UEA_datasets
 
 import numpy as np
 
@@ -116,6 +117,7 @@ def processed_UCR_data(
     Process UCR data by normalizing, fixing labels, and adding channel dimensions if necessary.
 
     Args:
+    # Assumes tslearn data format - (N, sz, C). Torch needs (N, C, sz)
     - X_train: Training data as numpy array.
     - y_train: Training labels as numpy array.
     - X_test: Testing data as numpy array.
@@ -134,9 +136,9 @@ def processed_UCR_data(
 
     scaler = TimeSeriesScalerMeanVariance(mu=0.0, std=1.0)
 
-    for c in range(X_train.shape[1]):
-        X_train[:, c, :] = np.squeeze(scaler.fit_transform(X_train[:, c, :]))
-        X_test[:, c, :] = np.squeeze(scaler.fit_transform(X_test[:, c, :]))
+    for c in range(X_train.shape[-1]):
+        X_train[:, :, c] = np.squeeze(scaler.fit_transform(X_train[:, :, c]))
+        X_test[:, :, c] = np.squeeze(scaler.fit_transform(X_test[:, :, c]))
 
     if resample > 0:
         X_train = TimeSeriesResampler(sz=resample).fit_transform(np.squeeze(X_train))
@@ -201,9 +203,13 @@ def get_UCR_data(
     - test_dataloader: DataLoader for testing data.
     """
     # Numpy
-    X_train, y_train, X_test, y_test = get_UCR_data_tsai(
-        dataset_name, parent_dir=data_dir
-    )
+    # X_train, y_train, X_test, y_test = get_UCR_data_tsai(
+    #     dataset_name, parent_dir=data_dir
+    # )
+
+    UCR_data = UCR_UEA_datasets()
+    # tslearn format (N, sz, C). Torch needs (N, C, sz)
+    X_train, y_train, X_test, y_test = UCR_data.load_dataset(dataset_name)
     # Numpy
     X_train, y_train, X_test, y_test = processed_UCR_data(
         X_train,
@@ -220,7 +226,6 @@ def get_UCR_data(
     )
     # Torch
     train_dataset = np_to_dataset(X_train, y_train, onehot)
-
     if val_split > 0:
         train_dataloader, validation_dataloader = get_train_and_validation_loaders(
             train_dataset,
