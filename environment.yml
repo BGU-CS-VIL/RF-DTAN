@@ -1,4 +1,4 @@
-name: rfdtan2
+name: rfdtan
 channels:
   - pytorch
   - defaults

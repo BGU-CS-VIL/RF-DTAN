@@ -76,7 +76,7 @@ def run_UCR_alignment(args):
 if __name__ == "__main__":
     BACKBONES = ['InceptionTime']
     DATASETS = ['ECGFiveDays']
-    override_config = True
+    override_config = False
     # ALL datasets: 
     # DATASETS = get_UCR_univariate_list()
     for backbone in BACKBONES:
