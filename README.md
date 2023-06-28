@@ -5,7 +5,7 @@ Official PyTorch implementation for our upcoming ICML 2023 paper, Regularization
 <img src="images/ICAE.png" alt="ICAE loss illustration" width="500">
 
 ## Forward and Inverse Alignment
-<img src="images/ECG_0_light.gif" alt="ICAE loss gif" width="800">
+<img src="images/ECG_0_compressed.gif" alt="ICAE loss gif" width="800">
 
 ## Time Series Joint Alignment 
 <img src="images/alignment_results.png" alt="Variable length time series joint alignment results" width="600">
