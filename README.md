@@ -1,8 +1,11 @@
 # Regularization-free Diffeomorphic Temporal Alignment Nets
 Official PyTorch implementation for our upcoming ICML 2023 paper, Regularization-free Diffeomorphic Temporal Alignment Nets.
 
-## The Inverse Consistenct Averaging Error
+## The Inverse Consistency Averaging Error
 <img src="images/ICAE.png" alt="ICAE loss illustration" width="500">
+
+## Forward and Inverse Alignment
+<img src="images/ECG_0_light.gif" alt="ICAE loss gif" width="800">
 
 ## Time Series Joint Alignment 
 <img src="images/alignment_results.png" alt="Variable length time series joint alignment results" width="600">
