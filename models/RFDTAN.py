@@ -13,6 +13,7 @@ from models.backbones.cnn import get_locnet
 
 # from TSAI
 MODEL_DICT = {
+    # InceptionTime from TSAI
     "InceptionTime": InceptionTime,
     # TCN from TSAI
     "TCN": TCN,
@@ -41,7 +42,7 @@ class RFDTAN(nn.Module):
         Initialize the DTAN model.
         
         Args:
-        - signal_len (int): signal length.
+        - signal_len (int): signal length. Use to define the batch dim for var-len datasets.
         - channels (int): number of channels.
         - tess (list): tessellation size.
         - n_recurrence (int): Number of recurrences for R-DTAN.
@@ -65,7 +66,7 @@ class RFDTAN(nn.Module):
         self.alignment_head_dim = self.theta_dim
         self.n_recurrence = n_recurrence
         self.sz = signal_len  # signal length
-        self.n_ss = 8  # squaring and scaling factor
+        self.n_ss = 8  # squaring and scaling factor (DIFW)
         self.channels = channels
         self.device = device
         self.backbone = backbone
@@ -87,7 +88,7 @@ class RFDTAN(nn.Module):
         nn.init.normal_(self.alignment_head[-1].weight, std=1e-5)
         nn.init.normal_(self.alignment_head[-1].bias, std=1e-5)
 
-    def ttn(self, x, embedding, return_theta=False):
+    def ttn(self, x, embedding):
         """
         Apply Temporal transformer network to the input x.
         
@@ -104,17 +105,12 @@ class RFDTAN(nn.Module):
         embedding = self.dropout(embedding)
         theta = self.alignment_head(embedding)
         theta = theta.view(-1, 1, self.theta_dim)
-        channels, sz = x.shape[1:]
-        # transform data needs channel last
-        x = torch.reshape(x, (-1, sz, channels))
+        
         # (N, C, sz)
         x = self.transform_data(x, theta)
         theta = theta.view(-1, self.theta_dim)
 
-        if not return_theta:
-            return x
-        else:
-            return x, theta
+        return x, theta
 
     def forward(self, x, return_nans=False):
         """
@@ -122,7 +118,6 @@ class RFDTAN(nn.Module):
         
         Args:
         - x (torch.Tensor): Input signal with shape (nb, channels, ts).
-        - return_nans (bool): Flag indicating whether to return the nan mask.
         
         Returns:
         - outputs (dict): Dictionary containing the following keys:
@@ -140,17 +135,17 @@ class RFDTAN(nn.Module):
 
         # Variable Length
         if has_nans:
-            nan_mask = torch.isnan(x).float().reshape(-1, sz, channels).to(device)
+            nan_mask = torch.isnan(x).float().reshape(-1,channels,sz).to(device)
             x = torch.nan_to_num(x, nan=0)
-
+        
         xt = torch.clone(x)
 
         for i in range(self.n_recurrence):
             embedding = self.backbone(xt)
-            xt, theta = self.ttn(xt, embedding, return_theta=True)
+            xt, theta = self.ttn(xt, embedding)
             thetas[:, i, :] = theta
 
-        x = self.transform_data(torch.reshape(x, (-1, sz, channels)), thetas)
+        x = self.transform_data(x, thetas)
 
         if has_nans:
             with torch.no_grad():
@@ -239,24 +234,27 @@ class RFDTAN(nn.Module):
         grid = self.T.uniform_meshgrid(n_points=self.sz).repeat(n_grids, 1)
         return grid
 
-    def transform_data(self, x, theta, reshape=True):
+    def transform_data(self, x, theta, channels_last=False):
         """
         Transform the input data x using the given theta values.
         
         Args:
-        - x (torch.Tensor): Input data with shape (nb, ts, channels).
+        - x (torch.Tensor): Input data with shape (nb, channels, ts).
         - theta (torch.Tensor): Theta values with shape (nb, nr, theta_dim).
         - reshape (bool): Flag indicating whether to reshape the output.
         
         Returns:
-        - xt (torch.Tensor): Transformed data with shape (nb, channels, sz).
+        - xt (torch.Tensor): Transformed data with shape (nb, channels, ts).
         """
-
+        if channels_last:
+            C = x.shape[-1]
+            x = x.reshape(-1, C, self.sz)
         grid_t = self.transform_grid(theta)
-        xt = self.T.interpolate(x, grid_t, outsize=self.sz)
-
-        if reshape:
-            xt = torch.reshape(xt, (-1, self.channels, self.sz))
+        nb, channels, ts = x.shape
+        xt = torch.zeros((nb, channels, self.sz), device=self.device)
+        for i in range(channels):
+            x_c = self.T.interpolate(x[:, i, :].unsqueeze(-1), grid_t, outsize=self.sz)
+            xt[:, i, :] = x_c.squeeze(-1)
 
         return xt
 

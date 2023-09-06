@@ -33,10 +33,10 @@ def run_UCR_alignment(args):
         swap_channel_dim=True,
     )
 
-
     classes = torch.unique(train_loader.dataset[:][1])
     n_classes = len(classes)
     channels, input_shape = train_loader.dataset[0][0].shape
+    print("channels, input_shape", channels, input_shape)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Model
@@ -50,34 +50,41 @@ def run_UCR_alignment(args):
         backbone=args.backbone,
     )
 
-
     # Train
     trainer_ucr = Trainer(
-        exp_name = "my_exp_name",
-        model = model,
-        train_loader = train_loader,
-        val_loader = val_loader,
+        exp_name="my_exp_name",
+        model=model,
+        train_loader=train_loader,
+        val_loader=val_loader,
         device=device,
-        args = args)
+        args=args)
 
     trainer_ucr.train(print_model=True)
-    
+
     # Evaluate
     res_dict = NCC_pipeline(model, train_loader, test_loader, args)
 
     # Plot alignment
+    X_train, y_train = train_loader.dataset[:][0], train_loader.dataset[:][1]
+    X_test, y_test = test_loader.dataset[:][0], test_loader.dataset[:][1]
+    sets_dict = {
+        "train": (X_train, y_train),
+        "test": (X_test, y_test),
+    }
     plot_signals(
-        model, device=device, dataset_name=args.dataset, data_dir=args.data_dir
-        )
+        model, device=device, dataset_name=args.dataset, sets_dict=sets_dict
 
+    )
 
     torch.cuda.empty_cache()
+
 
 if __name__ == "__main__":
     BACKBONES = ['InceptionTime']
     DATASETS = ['ECGFiveDays']
+    # override config file args
     override_config = False
-    # ALL datasets: 
+    # ALL datasets:
     # DATASETS = get_UCR_univariate_list()
     for backbone in BACKBONES:
         for dataset in DATASETS:
@@ -89,10 +96,11 @@ if __name__ == "__main__":
                 args.backbone = backbone
                 args.dataset = dataset
                 args.ICAE_loss = True
-                args.ICAE_triplets_loss = False
+                args.ICAE_triplets_loss =False
                 args.WCSS_loss = False
                 args.WCSS_triplets_loss = False
                 args.smoothness_prior = False
+                args.zero_boundary = False
 
                 args.n_recurrences = 4
                 args.batch_size = 128
@@ -101,8 +109,4 @@ if __name__ == "__main__":
                 args.lr = 0.0005
                 args.no_validation = True
 
-
-
             run_UCR_alignment(args)
-
-

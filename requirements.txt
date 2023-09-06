@@ -3,4 +3,4 @@ conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit
 difw==0.0.29
 tsai==0.2.24
 ipykernel
-tslearn==0.5.2
+tslearn

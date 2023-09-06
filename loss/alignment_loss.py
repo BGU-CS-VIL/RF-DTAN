@@ -211,7 +211,6 @@ class ICAE(nn.Module):
 
             
             # transform inverse
-            X_mean_stack = torch.reshape(X_mean_stack, (-1, input_shape, channels))
             X_mean_stack_inv = model.transform_data_inverse(X_mean_stack, theta_k)
             # compute mse between mean signal and original ones
             # original ones might have nans
@@ -302,7 +301,6 @@ class ICAETriplet(nn.Module):
             X_mean_stack = X_mean.repeat(n_samples, 1, 1)
             
 
-            X_mean_stack = torch.reshape(X_mean_stack, (-1, input_shape, channels))
             theta_k = thetas[y_true == i]
             X_mean_stack = model.transform_data_inverse(X_mean_stack, theta_k)
 
@@ -311,7 +309,6 @@ class ICAETriplet(nn.Module):
             # ICAE-triplet
             if nk > 1:
                 X_neg_mean_stack = X_neg_mean.repeat(n_samples, 1, 1)
-                X_neg_mean_stack = torch.reshape(X_neg_mean_stack, (-1, input_shape, channels))
                 X_neg_mean_stack = model.transform_data_inverse(X_neg_mean_stack, theta_k)
 
                 loss += self.loss(X_k, X_mean_stack, X_neg_mean_stack)

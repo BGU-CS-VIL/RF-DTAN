@@ -15,6 +15,8 @@ import numpy as np
 class UCRDataset(Dataset):
     """
     Dataset class for UCR time series data.
+    X - (N, C, sz) numpy array of time series data.
+    y - (N,) numpy array of labels.
     """
 
     def __init__(self, X, y) -> None:
@@ -22,9 +24,8 @@ class UCRDataset(Dataset):
         self.X = X
         self.y = y
 
-    def __getitem__(self, index):
+    def __getitem__(self, index):        
         return self.X[index], self.y[index]
-
     def __len__(self):
         return len(self.X)
 
@@ -33,6 +34,7 @@ class UCRDataset(Dataset):
 
     def set_X(self, X):
         self.X = X
+
 
 
 def np_to_dataset(X, y, onehot=False):
