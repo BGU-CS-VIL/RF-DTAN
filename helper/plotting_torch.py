@@ -40,14 +40,17 @@ def plot_mean_signal(
     rows = 2
     cols = 2
     # plot each channel
-    # list of 10 colors
+    # list of 10 colors for multichannel
     colors = ["b", "c", "g", "r", "m", "y", "k", "orange", "purple", "brown"]
     for channel in range(n_channels):
         plot_idx = 1
         # Misaligned Signals
         if channel == 0:
             ax1 = f.add_subplot(rows, cols, plot_idx)
-        ax1.plot(X_within_class[:, channel, :].T, color=colors[channel], alpha=0.4)
+        if n_channels == 1:
+            ax1.plot(X_within_class[:, channel, :].T)
+        else:
+            ax1.plot(X_within_class[:, channel, :].T, color=colors[channel], alpha=0.4)
         plt.tight_layout()
         plt.xlim(0, signal_len)
 
@@ -82,7 +85,10 @@ def plot_mean_signal(
         if channel == 0:
             ax3 = f.add_subplot(rows, cols, plot_idx)
         
-        ax3.plot(X_aligned_within_class[:, channel, :].T, color=colors[channel], alpha=0.4)
+        if n_channels == 1:
+            ax3.plot(X_aligned_within_class[:, channel, :].T)
+        else:
+            ax3.plot(X_aligned_within_class[:, channel, :].T, color=colors[channel], alpha=0.4)
         plt.title("Aligned signals", fontsize=title_font)
         plt.xlim(0, signal_len)
 
