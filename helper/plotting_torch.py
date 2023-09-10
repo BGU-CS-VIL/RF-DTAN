@@ -33,8 +33,7 @@ def plot_mean_signal(
     # set figure size
     [w, h] = ratio  # width, height
     plt.style.use("seaborn-darkgrid")
-    f = plt.figure(1)
-    f.set_size_inches(w, n_channels * h)
+
 
     title_font = 18
     rows = 2
@@ -43,22 +42,26 @@ def plot_mean_signal(
     # list of 10 colors for multichannel
     colors = ["b", "c", "g", "r", "m", "y", "k", "orange", "purple", "brown"]
     for channel in range(n_channels):
+        f = plt.figure()
+        f.set_size_inches(w, h)
         plot_idx = 1
         # Misaligned Signals
-        if channel == 0:
-            ax1 = f.add_subplot(rows, cols, plot_idx)
-        if n_channels == 1:
-            ax1.plot(X_within_class[:, channel, :].T)
-        else:
-            ax1.plot(X_within_class[:, channel, :].T, color=colors[channel], alpha=0.4)
+        ax1 = f.add_subplot(rows, cols, plot_idx)
+        ax1.plot(X_within_class[:, channel, :].T)
+        # if channel == 0:
+        #     ax1 = f.add_subplot(rows, cols, plot_idx)
+        # if n_channels == 1:
+        #     ax1.plot(X_within_class[:, channel, :].T)
+        # else:
+        #     ax1.plot(X_within_class[:, channel, :].T, color=colors[channel], alpha=0.4)
         plt.tight_layout()
         plt.xlim(0, signal_len)
 
-        if n_channels == 1:
-            # plt.title("%d random test samples" % (N))
-            plt.title("Misaligned signals", fontsize=title_font)
-        else:
-            plt.title(f"Channel: {channel}, Train data mean signal samples)")
+        # if n_channels == 1:
+        #     # plt.title("%d random test samples" % (N))
+        #     plt.title("Misaligned signals", fontsize=title_font)
+        # else:
+        plt.title(f"Channel: {channel}, Train data mean signal samples)")
         plot_idx += 1
 
         # Misaligned Mean
@@ -82,13 +85,15 @@ def plot_mean_signal(
         plot_idx += 1
 
         # Aligned signals
-        if channel == 0:
-            ax3 = f.add_subplot(rows, cols, plot_idx)
+        ax3 = f.add_subplot(rows, cols, plot_idx)
+        ax3.plot(X_aligned_within_class[:, channel, :].T)
+        # if channel == 0:
+        #     ax3 = f.add_subplot(rows, cols, plot_idx)
         
-        if n_channels == 1:
-            ax3.plot(X_aligned_within_class[:, channel, :].T)
-        else:
-            ax3.plot(X_aligned_within_class[:, channel, :].T, color=colors[channel], alpha=0.4)
+        # if n_channels == 1:
+        #     ax3.plot(X_aligned_within_class[:, channel, :].T)
+        # else:
+        #     ax3.plot(X_aligned_within_class[:, channel, :].T, color=colors[channel], alpha=0.4)
         plt.title("Aligned signals", fontsize=title_font)
         plt.xlim(0, signal_len)
 
@@ -116,8 +121,8 @@ def plot_mean_signal(
         plot_idx += 1
 
 
-    plt.suptitle(f"{dataset_name}: class-{class_num}", fontsize=title_font + 2)
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+        plt.suptitle(f"{dataset_name}: Class-{class_num} Channel-{channel}", fontsize=title_font + 2)
+        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     if savefig:
         Path(f"./figures/{dataset_name}").mkdir(parents=True, exist_ok=True)
         f.savefig(
